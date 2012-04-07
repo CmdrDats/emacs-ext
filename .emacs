@@ -1,6 +1,7 @@
 ;; from http://technomancy.us/153
 ;; Clojure stuff
 (require 'package)
+
 (add-to-list 'package-archives
              '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
@@ -9,15 +10,20 @@
   (package-refresh-contents))
 
 (defvar my-packages '(            
-			rainbow-delimiters
-      clojure-mode 
+      rainbow-delimiters
       marmalade
       furl
       ido-ubiquitous
-      php-mode
+      starter-kit
+      starter-kit-lisp
       slime
-      slime-clj
-      slime-fuzzy
+      clojure-mode 
+      auto-complete
+      ;slime-fuzzy
+      ac-slime
+      ;slime-clj
+      ;slime-repl
+      ;php-mode
       smart-tab
       undo-tree
       zenburn-theme
@@ -32,6 +38,8 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
+(require 'clojure-mode)
+(require 'slime)
 (require 'rainbow-delimiters)
 ;; Add hooks for modes where you want it enabled, for example:
 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
@@ -45,19 +53,22 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(custom-safe-themes (quote ("b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
+ '(show-paren-mode t)
  '(standard-indent 2)
  '(tab-stop-list (quote (2 4 6 8 10 12 14 16 18 20 22 24 26 28 30)))
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(transient-mark-mode (quote (only . t)))
+ '(visible-bell nil))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:stipple nil :background "#3f3f3f" :foreground "#dcdccc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :foundry "outline" :family "Inconsolata"))))
+ '(font-lock-constant-face ((t (:foreground "#cc8844"))))
  '(rainbow-delimiters-depth-1-face ((((background light)) (:foreground "black"))))
  '(rainbow-delimiters-depth-2-face ((((background light)) (:foreground "green"))))
  '(rainbow-delimiters-depth-3-face ((((background light)) (:foreground "red"))))
@@ -68,6 +79,18 @@
  '(rainbow-delimiters-depth-8-face ((((background light)) (:foreground "blue"))))
  '(rainbow-delimiters-unmatched-face ((((background light)) (:foreground "grey")))))
 
+(defun smart-beginning-of-line ()
+  "Move point to first non-whitespace character or beginning-of-line.
+
+Move point to the first non-whitespace character on this line.
+If point was already at that position, move point to beginning of line."
+  (interactive) ; Use (interactive "^") in Emacs 23 to make shift-select work
+  (let ((oldpos (point)))
+    (back-to-indentation)
+    (and (= oldpos (point))
+         (beginning-of-line))))
+
+(global-set-key [home] 'smart-beginning-of-line)
 
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
@@ -83,6 +106,8 @@
 (global-set-key (kbd "C-f") 'isearch-forward)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
+(global-set-key (quote [end]) 'move-end-of-line)
+(global-set-key (quote [home]) 'smart-beginning-of-line)
 
 (setq make-backup-files nil) ; stop creating those backup~ files
 (setq auto-save-default nil) ; stop creating those #autosave# files
@@ -184,3 +209,11 @@
 
 (global-set-key "\M-i" 'ido-goto-symbol) ; or any key you see fit
 
+
+;; Window movement
+(global-set-key [s-left] 'windmove-left)
+(global-set-key [s-right] 'windmove-right)
+(global-set-key [s-up] 'windmove-up)
+(global-set-key [s-down] 'windmove-down)
+
+(set-default-font "Inconsolata 13")
