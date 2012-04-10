@@ -17,13 +17,13 @@
       starter-kit
       starter-kit-lisp
       slime
+      slime-repl
       clojure-mode 
       auto-complete
       ;slime-fuzzy
       ac-slime
       ;slime-clj
       ;slime-repl
-      ;php-mode
       smart-tab
       undo-tree
       zenburn-theme
@@ -38,12 +38,54 @@
   (when (not (package-installed-p p))
     (package-install p)))
 
+(cua-mode t)
+(delete-selection-mode t)
 (require 'clojure-mode)
 (require 'slime)
+(require 'slime-repl)
 (require 'rainbow-delimiters)
+(require 'auto-complete)
+(require 'ac-slime)
 ;; Add hooks for modes where you want it enabled, for example:
 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
+(add-hook 'slime-mode-hook 'set-up-slime-ac)
 
+(add-hook 'slime-repl-mode-hook
+          (defun clojure-mode-slime-font-lock ()
+            (require 'clojure-mode)
+            (let (font-lock-mode)
+              (clojure-mode-font-lock-setup))))
+
+;; Technomancy's slime colours
+(require 'ansi-color)
+
+(defadvice sldb-insert-frame (around colorize-clj-trace (frame &optional face))
+  (progn
+    (ad-set-arg 0 (list (sldb-frame.number frame)
+                        (ansi-color-apply (sldb-frame.string frame))
+                        (sldb-frame.plist frame)))
+    ad-do-it
+    (save-excursion
+      (forward-line -1)
+      (skip-chars-forward "0-9 :")
+      (let ((beg-line (point)))
+        (end-of-line)
+        (remove-text-properties beg-line (point) '(face nil))))))
+
+(ad-activate #'sldb-insert-frame)
+
+(add-to-list 'ac-modes 'clojure-mode)
+
+(setq ac-use-quick-help t)
+(setq ac-quick-help-delay 1)
+
+(define-globalized-minor-mode real-global-auto-complete-mode
+  auto-complete-mode (lambda ()
+                       (if (not (minibufferp (current-buffer)))
+                         (auto-complete-mode 1))
+                       ))
+
+(real-global-auto-complete-mode t)
 ;; enabling frames as pop-ups:
 ;(setq pop-up-frames t)
 
@@ -146,7 +188,20 @@ If point was already at that position, move point to beginning of line."
 (show-paren-mode t)                 ; turn paren-mode on
 (setq show-paren-style 'expression) ; alternatives are 'expression', 'parenthesis' and 'mixed'
 (set-face-attribute 'show-paren-match-face nil 
-        :weight 'normal :underline nil :overline nil :slant 'normal)
+                    :weight 'normal :underline nil :overline nil :slant 'normal)
+
+(defun kill-paredit-or-region (beg end) 
+ "kill region if active only or kill line normally"
+  (interactive "r")
+  (if (region-active-p)
+      (call-interactively 'kill-region)
+    (call-interactively 'paredit-forward-delete)))
+
+(eval-after-load 'paredit
+  '(progn
+     (define-key paredit-mode-map (kbd "<kp-delete>") 'kill-paredit-or-region)
+     (define-key paredit-mode-map (kbd "<M-up>") nil)
+     (define-key paredit-mode-map (kbd "<M-down>") nil)))
 
 (defun remove-dos-eol ()
   "Do not show ^M in files containing mixed UNIX and DOS line endings."
@@ -216,4 +271,4 @@ If point was already at that position, move point to beginning of line."
 (global-set-key [s-up] 'windmove-up)
 (global-set-key [s-down] 'windmove-down)
 
-(set-default-font "Inconsolata 13")
+(set-default-font "Inconsolata 15")
