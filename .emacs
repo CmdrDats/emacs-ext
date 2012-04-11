@@ -20,6 +20,7 @@
       slime-repl
       clojure-mode 
       auto-complete
+      ace-jump-mode
       ;slime-fuzzy
       ac-slime
       ;slime-clj
@@ -27,6 +28,7 @@
       smart-tab
       undo-tree
       zenburn-theme
+      buffer-move
       ;tabbar-ruler
       ;tabbar
       ; slime      ;embedded inside swank-clojure-1.4.0-SNAPSHOT.jar\swank\payload
@@ -46,6 +48,7 @@
 (require 'rainbow-delimiters)
 (require 'auto-complete)
 (require 'ac-slime)
+(require 'buffer-move)
 ;; Add hooks for modes where you want it enabled, for example:
 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
 (add-hook 'slime-mode-hook 'set-up-slime-ac)
@@ -110,7 +113,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-constant-face ((t (:foreground "#cc8844"))))
+ '(font-lock-constant-face ((t (:foreground "#ddaa77" :weight bold))))
+ '(font-lock-function-name-face ((t (:foreground "#8cd0d3" :slant italic))))
  '(rainbow-delimiters-depth-1-face ((((background light)) (:foreground "black"))))
  '(rainbow-delimiters-depth-2-face ((((background light)) (:foreground "green"))))
  '(rainbow-delimiters-depth-3-face ((((background light)) (:foreground "red"))))
@@ -150,6 +154,14 @@ If point was already at that position, move point to beginning of line."
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (quote [end]) 'move-end-of-line)
 (global-set-key (quote [home]) 'smart-beginning-of-line)
+
+(global-set-key (kbd "<M-s-right>") 'buf-move-right)
+(global-set-key (kbd "<M-s-left>") 'buf-move-left)
+(global-set-key (kbd "<M-s-up>") 'buf-move-up)
+(global-set-key (kbd "<M-s-down>") 'buf-move-down)
+
+(require 'ace-jump-mode)
+(global-set-key (kbd "s-f") 'ace-jump-mode)
 
 (setq make-backup-files nil) ; stop creating those backup~ files
 (setq auto-save-default nil) ; stop creating those #autosave# files
