@@ -26,7 +26,6 @@
       ;slime-clj
       ;slime-repl
       smart-tab
-      undo-tree
       zenburn-theme
       buffer-move
       ;tabbar-ruler
@@ -141,8 +140,6 @@ If point was already at that position, move point to beginning of line."
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
 
-(require 'undo-tree)
-(global-undo-tree-mode)
 (global-set-key (kbd "C-z") 'undo) ; Ctrl+z
 (global-set-key (kbd "C-S-z") 'redo) ;  Ctrl+Shift+z
 (global-set-key (kbd "C-c") 'kill-ring-save)
@@ -199,8 +196,7 @@ If point was already at that position, move point to beginning of line."
 (setq show-paren-delay 0)           ; how long to wait?
 (show-paren-mode t)                 ; turn paren-mode on
 (setq show-paren-style 'expression) ; alternatives are 'expression', 'parenthesis' and 'mixed'
-(set-face-attribute 'show-paren-match-face nil 
-                    :weight 'normal :underline nil :overline nil :slant 'normal)
+(set-face-attribute 'show-paren-match-face nil :underline nil :overline nil :foreground nil :background "#224455")
 
 (defun kill-paredit-or-region (beg end) 
  "kill region if active only or kill line normally"
@@ -284,3 +280,13 @@ If point was already at that position, move point to beginning of line."
 (global-set-key [s-down] 'windmove-down)
 
 (set-default-font "Inconsolata 15")
+
+;; Get rid of popups in OSX!!
+(defadvice yes-or-no-p (around prevent-dialog activate)
+  "Prevent yes-or-no-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
+(defadvice y-or-n-p (around prevent-dialog-yorn activate)
+  "Prevent y-or-n-p from activating a dialog"
+  (let ((use-dialog-box nil))
+    ad-do-it))
