@@ -20,7 +20,8 @@
       slime-repl
       clojure-mode 
       auto-complete
-      ace-jump-mode
+      ack-and-a-half
+      ;ace-jump-mode
       ;slime-fuzzy
       ac-slime
       ;slime-clj
@@ -97,9 +98,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(custom-safe-themes (quote ("71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
+ '(ido-use-filename-at-point nil)
  '(show-paren-mode t)
  '(standard-indent 2)
  '(tab-stop-list (quote (2 4 6 8 10 12 14 16 18 20 22 24 26 28 30)))
@@ -156,9 +158,6 @@ If point was already at that position, move point to beginning of line."
 (global-set-key (kbd "<M-s-left>") 'buf-move-left)
 (global-set-key (kbd "<M-s-up>") 'buf-move-up)
 (global-set-key (kbd "<M-s-down>") 'buf-move-down)
-
-(require 'ace-jump-mode)
-(global-set-key (kbd "s-f") 'ace-jump-mode)
 
 (setq make-backup-files nil) ; stop creating those backup~ files
 (setq auto-save-default nil) ; stop creating those #autosave# files
@@ -290,3 +289,10 @@ If point was already at that position, move point to beginning of line."
   "Prevent y-or-n-p from activating a dialog"
   (let ((use-dialog-box nil))
     ad-do-it))
+
+;; Setup for ack-and-a-half
+(setq ack-and-a-half-executable "/usr/local/bin/ack")
+(defalias 'ack 'ack-and-a-half)
+(defalias 'ack-same 'ack-and-a-half-same)
+(defalias 'ack-find-fiile 'ack-and-a-half-find-file)
+(defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
