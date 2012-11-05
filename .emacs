@@ -34,6 +34,7 @@
       ; slime      ;embedded inside swank-clojure-1.4.0-SNAPSHOT.jar\swank\payload
       ; slime-repl ;embedded inside swank-clojure-1.4.0-SNAPSHOT.jar\swank\payload
       paredit
+      erlang
 ))
 
 (dolist (p my-packages)
@@ -102,6 +103,7 @@
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
  '(ido-use-filename-at-point nil)
+ '(recentf-mode nil)
  '(show-paren-mode t)
  '(standard-indent 2)
  '(tab-stop-list (quote (2 4 6 8 10 12 14 16 18 20 22 24 26 28 30)))
@@ -162,6 +164,11 @@ If point was already at that position, move point to beginning of line."
 (setq make-backup-files nil) ; stop creating those backup~ files
 (setq auto-save-default nil) ; stop creating those #autosave# files
 
+(setq scroll-step 10)
+(setq scroll-conservatively 0)
+(setq auto-window-vscroll nil)
+(setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-scroll-amount '(5 ((shift) . 1)))
 ;; dragging lines up and down with M-<up> and M-<down>
 (defun move-line-down ()
   (interactive)
@@ -278,6 +285,124 @@ If point was already at that position, move point to beginning of line."
 (global-set-key [s-up] 'windmove-up)
 (global-set-key [s-down] 'windmove-down)
 
+
+(defun win-resize-top-or-bot ()
+  "Figure out if the current window is on top, bottom or in the
+middle"
+  (let* ((win-edges (window-edges))
+	 (this-window-y-min (nth 1 win-edges))
+	 (this-window-y-max (nth 3 win-edges))
+	 (fr-height (frame-height)))
+    (cond
+     ((eq 0 this-window-y-min) "top")
+     ((eq (- fr-height 1) this-window-y-max) "bot")
+     (t "mid"))))
+
+(defun win-resize-left-or-right ()
+  "Figure out if the current window is to the left, right or in the
+middle"
+  (let* ((win-edges (window-edges))
+	 (this-window-x-min (nth 0 win-edges))
+	 (this-window-x-max (nth 2 win-edges))
+	 (fr-width (frame-width)))
+    (cond
+     ((eq 0 this-window-x-min) "left")
+     ((eq (+ fr-width 4) this-window-x-max) "right")
+     (t "mid"))))
+
+(defun win-resize-enlarge-vert ()
+  (interactive)
+  (cond
+   ((equal "top" (win-resize-top-or-bot)) (enlarge-window -15))
+   ((equal "bot" (win-resize-top-or-bot)) (enlarge-window 15))
+   ((equal "mid" (win-resize-top-or-bot)) (enlarge-window -15))
+   (t (message "nil"))))
+
+(defun win-resize-minimize-vert ()
+  (interactive)
+  (cond
+   ((equal "top" (win-resize-top-or-bot)) (enlarge-window 15))
+   ((equal "bot" (win-resize-top-or-bot)) (enlarge-window -15))
+   ((equal "mid" (win-resize-top-or-bot)) (enlarge-window 15))
+   (t (message "nil"))))
+
+(defun win-resize-enlarge-horiz ()
+  (interactive)
+  (cond
+   ((equal "left" (win-resize-left-or-right)) (enlarge-window-horizontally -30))
+   ((equal "right" (win-resize-left-or-right)) (enlarge-window-horizontally 30))
+   ((equal "mid" (win-resize-left-or-right)) (enlarge-window-horizontally 30))))
+
+(defun win-resize-minimize-horiz ()
+  (interactive)
+  (cond
+   ((equal "left" (win-resize-left-or-right)) (enlarge-window-horizontally 30))
+   ((equal "right" (win-resize-left-or-right)) (enlarge-window-horizontally -30))
+   ((equal "mid" (win-resize-left-or-right)) (enlarge-window-horizontally -30))))
+
+(global-set-key [s-S-left] 'win-resize-enlarge-horiz)
+(global-set-key [s-S-right] 'win-resize-minimize-horiz)
+(global-set-key [s-S-up] 'win-resize-enlarge-vert)
+(global-set-key [s-S-down] 'win-resize-minimize-vert)
+;(global-set-key [s-S-right] 'win-resize-enlarge-horiz)
+;(global-set-key [s-S-down] 'win-resize-enlarge-horiz)
+;(global-set-key [s-S-down] 'win-resize-minimize-horiz)
+;(global-set-key [s-S-left] 'win-resize-enlarge-vert)
+
+
+(defvar unscroll-point (make-marker)
+  "Cursor position for next call to \\[unscroll].")
+(defvar unscroll-window-start (make-marker)
+  "Window start for next call to \\[unscroll].")
+(defvar unscroll-hscroll nil
+  "Horizontal scroll for next call to \\[unscroll].")
+
+(defun unscroll ()
+  "Revert to last position before the start of scrolling."
+  (interactive)
+  (goto-char unscroll-point)
+  (set-window-start nil unscroll-window-start)
+  (set-window-hscroll nil unscroll-hscroll))
+
+(global-set-key [M-z] 'unscroll)
+
+(put 'scroll-up 'unscrollable t)
+(put 'scroll-down 'unscrollable t)
+(put 'scroll-left 'unscrollable t)
+(put 'scroll-right 'unscrollable t)
+(put 'cua-scroll-up 'unscrollable t)
+(put 'cua-scroll-down 'unscrollable t)
+(put 'cua-scroll-left 'unscrollable t)
+(put 'cua-scroll-right 'unscrollable t)
+(put 'mwheel-scroll 'unscrollable t)
+(put 'beginning-of-buffer 'unscrollable t)
+(put 'end-of-buffer 'unscrollable t)
+
+(defun unscroll-maybe-remember ()
+  (if (not (get last-command 'unscrollable))
+      (progn
+	(set-marker unscroll-point (point))
+	(set-marker unscroll-window-start (window-start))
+	(setq unscroll-hscroll (window-hscroll)))))
+
+
+(defadvice scroll-up (before remember-for-unscroll activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+(defadvice scroll-down (before remember-for-unscroll activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+(defadvice scroll-left (before remember-for-unscroll activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+(defadvice scroll-right (before remember-for-unscroll activate compile)
+  "Remember where we started from, for `unscroll'."
+  (unscroll-maybe-remember))
+
+
 (set-default-font "Inconsolata 15")
 
 ;; Get rid of popups in OSX!!
@@ -296,3 +421,21 @@ If point was already at that position, move point to beginning of line."
 (defalias 'ack-same 'ack-and-a-half-same)
 (defalias 'ack-find-fiile 'ack-and-a-half-find-file)
 (defalias 'ack-find-file-same 'ack-and-a-half-find-file-same)
+
+;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
+(defun rename-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not filename)
+        (message "Buffer '%s' is not visiting a file!" name)
+      (if (get-buffer new-name)
+          (message "A buffer named '%s' already exists!" new-name)
+        (progn
+          (rename-file name new-name 1)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil))))))
+
+
