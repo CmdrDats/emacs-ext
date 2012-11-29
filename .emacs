@@ -16,14 +16,16 @@
       ido-ubiquitous
       starter-kit
       starter-kit-lisp
-      slime
-      slime-repl
+      ;slime
+      ;slime-repl
       clojure-mode 
       auto-complete
       ack-and-a-half
+      nrepl
+      ac-nrepl
       ;ace-jump-mode
       ;slime-fuzzy
-      ac-slime
+      ;ac-slime
       ;slime-clj
       ;slime-repl
       smart-tab
@@ -31,8 +33,6 @@
       buffer-move
       ;tabbar-ruler
       ;tabbar
-      ; slime      ;embedded inside swank-clojure-1.4.0-SNAPSHOT.jar\swank\payload
-      ; slime-repl ;embedded inside swank-clojure-1.4.0-SNAPSHOT.jar\swank\payload
       paredit
       erlang
 ))
@@ -44,41 +44,53 @@
 (cua-mode t)
 (delete-selection-mode t)
 (require 'clojure-mode)
-(require 'slime)
-(require 'slime-repl)
+;(require 'slime)
+;(require 'slime-repl)
 (require 'rainbow-delimiters)
 (require 'auto-complete)
-(require 'ac-slime)
+;(require 'ac-slime)
 (require 'buffer-move)
 ;; Add hooks for modes where you want it enabled, for example:
 (add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'slime-mode-hook 'set-up-slime-ac)
+;(add-hook 'slime-mode-hook 'set-up-slime-ac)
 
-(add-hook 'slime-repl-mode-hook
-          (defun clojure-mode-slime-font-lock ()
-            (require 'clojure-mode)
-            (let (font-lock-mode)
-              (clojure-mode-font-lock-setup))))
+
+;; (add-hook 'slime-repl-mode-hook
+;;           (defun clojure-mode-slime-font-lock ()
+;;             (require 'clojure-mode)
+;;             (let (font-lock-mode)
+;;               (clojure-mode-font-lock-setup))))
 
 ;; Technomancy's slime colours
-(require 'ansi-color)
+;; (require 'ansi-color)
 
-(defadvice sldb-insert-frame (around colorize-clj-trace (frame &optional face))
-  (progn
-    (ad-set-arg 0 (list (sldb-frame.number frame)
-                        (ansi-color-apply (sldb-frame.string frame))
-                        (sldb-frame.plist frame)))
-    ad-do-it
-    (save-excursion
-      (forward-line -1)
-      (skip-chars-forward "0-9 :")
-      (let ((beg-line (point)))
-        (end-of-line)
-        (remove-text-properties beg-line (point) '(face nil))))))
+;; (defadvice sldb-insert-frame (around colorize-clj-trace (frame &optional face))
+;;   (progn
+;;     (ad-set-arg 0 (list (sldb-frame.number frame)
+;;                         (ansi-color-apply (sldb-frame.string frame))
+;;                         (sldb-frame.plist frame)))
+;;     ad-do-it
+;;     (save-excursion
+;;       (forward-line -1)
+;;       (skip-chars-forward "0-9 :")
+;;       (let ((beg-line (point)))
+;;         (end-of-line)
+;;         (remove-text-properties beg-line (point) '(face nil))))))
 
-(ad-activate #'sldb-insert-frame)
+;;(ad-activate #'sldb-insert-frame)
 
 (add-to-list 'ac-modes 'clojure-mode)
+
+(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+(add-to-list 'same-window-buffer-names "*nrepl*")
+(add-hook 'nrepl-mode-hook 'paredit-mode)
+(setq nrepl-popup-stacktraces nil)
+
+(require 'ac-nrepl)
+ (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+ (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+ (eval-after-load "auto-complete"
+   '(add-to-list 'ac-modes 'nrepl-mode))
 
 (setq ac-use-quick-help t)
 (setq ac-quick-help-delay 1)
@@ -98,6 +110,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ac-auto-start 2)
  '(custom-enabled-themes (quote (zenburn)))
  '(custom-safe-themes (quote ("71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(ido-everywhere t)
@@ -160,6 +173,7 @@ If point was already at that position, move point to beginning of line."
 (global-set-key (kbd "<M-s-left>") 'buf-move-left)
 (global-set-key (kbd "<M-s-up>") 'buf-move-up)
 (global-set-key (kbd "<M-s-down>") 'buf-move-down)
+(global-set-key (kbd "s-n") 'find-file-in-project)
 
 (setq make-backup-files nil) ; stop creating those backup~ files
 (setq auto-save-default nil) ; stop creating those #autosave# files
@@ -344,6 +358,7 @@ middle"
 (global-set-key [s-S-right] 'win-resize-minimize-horiz)
 (global-set-key [s-S-up] 'win-resize-enlarge-vert)
 (global-set-key [s-S-down] 'win-resize-minimize-vert)
+
 ;(global-set-key [s-S-right] 'win-resize-enlarge-horiz)
 ;(global-set-key [s-S-down] 'win-resize-enlarge-horiz)
 ;(global-set-key [s-S-down] 'win-resize-minimize-horiz)
