@@ -116,6 +116,8 @@
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
  '(ido-use-filename-at-point nil)
+ '(nrepl-host "dev")
+ '(nrepl-port "4005")
  '(recentf-mode nil)
  '(show-paren-mode t)
  '(standard-indent 2)
