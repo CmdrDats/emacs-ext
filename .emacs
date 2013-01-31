@@ -9,7 +9,7 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar my-packages '(            
+(defvar my-packages '(
       rainbow-delimiters
       marmalade
       furl
@@ -19,7 +19,6 @@
       ;slime
       ;slime-repl
       clojure-mode 
-      auto-complete
       ack-and-a-half
       nrepl
       ac-nrepl
@@ -35,6 +34,7 @@
       ;tabbar
       paredit
       erlang
+      highlight-parentheses
 ))
 
 (dolist (p my-packages)
@@ -104,15 +104,22 @@
 (real-global-auto-complete-mode t)
 ;; enabling frames as pop-ups:
 ;(setq pop-up-frames t)
+(put-clojure-indent 'run* 'defun)
+(put-clojure-indent 'run 'defun)
+(put-clojure-indent 'fresh 'defun)
+(put-clojure-indent 'conde 'defun)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ac-auto-start 2)
+ '(ac-auto-show-menu nil)
+ '(ac-auto-start nil)
  '(custom-enabled-themes (quote (zenburn)))
  '(custom-safe-themes (quote ("71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(hl-paren-background-colors (quote ("#3355aa" "white")))
+ '(hl-paren-colors (quote ("gold" "white")))
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
  '(ido-use-filename-at-point nil)
@@ -219,6 +226,15 @@ If point was already at that position, move point to beginning of line."
 (show-paren-mode t)                 ; turn paren-mode on
 (setq show-paren-style 'expression) ; alternatives are 'expression', 'parenthesis' and 'mixed'
 (set-face-attribute 'show-paren-match-face nil :underline nil :overline nil :foreground nil :background "#224455")
+
+(require 'highlight-parentheses)
+(define-globalized-minor-mode global-highlight-parentheses-mode
+  highlight-parentheses-mode
+  (lambda ()
+    (highlight-parentheses-mode t)))
+(global-highlight-parentheses-mode t)
+
+
 
 (defun kill-paredit-or-region (beg end) 
  "kill region if active only or kill line normally"
@@ -456,3 +472,10 @@ middle"
           (set-buffer-modified-p nil))))))
 
 
+(global-set-key (kbd "<f6>") 'highlight-regexp)
+(global-set-key (kbd "M-<f6>") 'unhighlight-regexp)
+(auto-fill-mode -1)
+(turn-off-auto-fill)
+(remove-hook 'text-mode-hook 'turn-on-auto-fill)
+
+(add-to-list 'exec-path "/usr/local/Cellar/smlnj/110.75/libexec/bin")
