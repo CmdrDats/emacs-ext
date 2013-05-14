@@ -3,7 +3,9 @@
 (require 'package)
 
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+             '("melpa" . "http://melpa.milkbox.net/packages/")
+             '("marmalade" . "http://marmalade-repo.org/packages/")
+             )
 (package-initialize)
 
 (when (not package-archive-contents)
@@ -12,30 +14,24 @@
 (defvar my-packages '(
       rainbow-delimiters
       marmalade
+      projectile
       furl
       ido-ubiquitous
       starter-kit
       starter-kit-lisp
-      ;slime
-      ;slime-repl
       clojure-mode 
       ack-and-a-half
       nrepl
+      nrepl-ritz
       ac-nrepl
-      ;ace-jump-mode
-      ;slime-fuzzy
-      ;ac-slime
-      ;slime-clj
-      ;slime-repl
       smart-tab
       zenburn-theme
       buffer-move
-      ;tabbar-ruler
-      ;tabbar
       paredit
       erlang
       highlight-parentheses
-))
+      haskell-mode
+      ))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -44,15 +40,18 @@
 (cua-mode t)
 (delete-selection-mode t)
 (require 'clojure-mode)
-;(require 'slime)
-;(require 'slime-repl)
+(require 'projectile)
 (require 'rainbow-delimiters)
 (require 'auto-complete)
-;(require 'ac-slime)
 (require 'buffer-move)
+
 ;; Add hooks for modes where you want it enabled, for example:
-(add-hook 'clojure-mode-hook 'rainbow-delimiters-mode)
-;(add-hook 'slime-mode-hook 'set-up-slime-ac)
+(setq projectile-show-paths-function 'projectile-hashify-with-relative-paths)
+
+(add-hook 'nrepl-interaction-mode-hook 'my-nrepl-mode-setup)
+(defun my-nrepl-mode-setup ()
+  (require 'nrepl-ritz))
+                                        ;(add-hook 'slime-mode-hook 'set-up-slime-ac)
 
 
 ;; (add-hook 'slime-repl-mode-hook
@@ -84,6 +83,7 @@
 (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
 (add-to-list 'same-window-buffer-names "*nrepl*")
 (add-hook 'nrepl-mode-hook 'paredit-mode)
+(add-hook 'prog-mode-hook 'paredit-mode)
 (setq nrepl-popup-stacktraces nil)
 
 (require 'ac-nrepl)
@@ -109,6 +109,12 @@
 (put-clojure-indent 'fresh 'defun)
 (put-clojure-indent 'conde 'defun)
 
+
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(add-to-list 'auto-mode-alist '("\.edn$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
+(projectile-global-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -117,14 +123,18 @@
  '(ac-auto-show-menu nil)
  '(ac-auto-start nil)
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
- '(hl-paren-background-colors (quote ("#3355aa" "white")))
- '(hl-paren-colors (quote ("gold" "white")))
+ '(custom-safe-themes (quote ("5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(haskell-mode-hook (quote (turn-on-haskell-indentation turn-on-font-lock turn-on-haskell-doc-mode turn-on-haskell-decl-scan imenu-add-menubar-index)))
+ '(haskell-program-name "/usr/local/bin/hugs \"+.\"")
+ '(hl-paren-background-colors (quote ("#3355aa" "#557733" "#335533")))
+ '(hl-paren-colors (quote nil))
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
  '(ido-use-filename-at-point nil)
- '(nrepl-host "dev")
- '(nrepl-port "4005")
+ '(lua-default-application "lua")
+ '(nrepl-connected-hook (quote (nrepl-enable-on-existing-clojure-buffers)))
+ '(nrepl-host "localhost")
+ '(nrepl-port "")
  '(recentf-mode nil)
  '(show-paren-mode t)
  '(standard-indent 2)
@@ -140,15 +150,31 @@
  ;; If there is more than one, they won't work right.
  '(font-lock-constant-face ((t (:foreground "#ddaa77" :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "#8cd0d3" :slant italic))))
- '(rainbow-delimiters-depth-1-face ((((background light)) (:foreground "black"))))
- '(rainbow-delimiters-depth-2-face ((((background light)) (:foreground "green"))))
- '(rainbow-delimiters-depth-3-face ((((background light)) (:foreground "red"))))
- '(rainbow-delimiters-depth-4-face ((((background light)) (:foreground "cyan"))))
- '(rainbow-delimiters-depth-5-face ((((background light)) (:foreground "orange"))))
- '(rainbow-delimiters-depth-6-face ((((background light)) (:foreground "brown"))))
- '(rainbow-delimiters-depth-7-face ((((background light)) (:foreground "pink"))))
- '(rainbow-delimiters-depth-8-face ((((background light)) (:foreground "blue"))))
- '(rainbow-delimiters-unmatched-face ((((background light)) (:foreground "grey")))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "#7dd6e8"))))
+ '(rainbow-delimiters-depth-10-face ((t (:foreground "#ece4bf"))) t)
+ '(rainbow-delimiters-depth-11-face ((t (:foreground "#ef9f7f"))) t)
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "#ece47f"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "#91bcf4"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "#ddb3b3"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "#dfbca2"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#89c4c7"))))
+ '(rainbow-delimiters-depth-7-face ((t (:foreground "#c2eec6"))))
+ '(rainbow-delimiters-depth-8-face ((t (:foreground "#ef9f7f"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#9de6e8")))))
+
+(setq show-paren-delay 0)           ; how long to wait?
+(show-paren-mode t)                 ; turn paren-mode on
+(setq show-paren-style 'expression) ; alternatives are 'expression', 'parenthesis' and 'mixed'
+(set-face-attribute 'show-paren-match-face nil :underline nil :overline nil :foreground nil :background "#224455")
+
+(require 'highlight-parentheses)
+(define-globalized-minor-mode global-highlight-parentheses-mode
+  highlight-parentheses-mode
+  (lambda ()
+    (highlight-parentheses-mode t)))
+(global-highlight-parentheses-mode t)
+
+
 
 (defun smart-beginning-of-line ()
   "Move point to first non-whitespace character or beginning-of-line.
@@ -221,20 +247,6 @@ If point was already at that position, move point to beginning of line."
 (setq ido-enable-flex-matching t)
 
 (delete-selection-mode t)
-
-(setq show-paren-delay 0)           ; how long to wait?
-(show-paren-mode t)                 ; turn paren-mode on
-(setq show-paren-style 'expression) ; alternatives are 'expression', 'parenthesis' and 'mixed'
-(set-face-attribute 'show-paren-match-face nil :underline nil :overline nil :foreground nil :background "#224455")
-
-(require 'highlight-parentheses)
-(define-globalized-minor-mode global-highlight-parentheses-mode
-  highlight-parentheses-mode
-  (lambda ()
-    (highlight-parentheses-mode t)))
-(global-highlight-parentheses-mode t)
-
-
 
 (defun kill-paredit-or-region (beg end) 
  "kill region if active only or kill line normally"
@@ -382,60 +394,6 @@ middle"
 ;(global-set-key [s-S-down] 'win-resize-minimize-horiz)
 ;(global-set-key [s-S-left] 'win-resize-enlarge-vert)
 
-
-(defvar unscroll-point (make-marker)
-  "Cursor position for next call to \\[unscroll].")
-(defvar unscroll-window-start (make-marker)
-  "Window start for next call to \\[unscroll].")
-(defvar unscroll-hscroll nil
-  "Horizontal scroll for next call to \\[unscroll].")
-
-(defun unscroll ()
-  "Revert to last position before the start of scrolling."
-  (interactive)
-  (goto-char unscroll-point)
-  (set-window-start nil unscroll-window-start)
-  (set-window-hscroll nil unscroll-hscroll))
-
-(global-set-key [M-z] 'unscroll)
-
-(put 'scroll-up 'unscrollable t)
-(put 'scroll-down 'unscrollable t)
-(put 'scroll-left 'unscrollable t)
-(put 'scroll-right 'unscrollable t)
-(put 'cua-scroll-up 'unscrollable t)
-(put 'cua-scroll-down 'unscrollable t)
-(put 'cua-scroll-left 'unscrollable t)
-(put 'cua-scroll-right 'unscrollable t)
-(put 'mwheel-scroll 'unscrollable t)
-(put 'beginning-of-buffer 'unscrollable t)
-(put 'end-of-buffer 'unscrollable t)
-
-(defun unscroll-maybe-remember ()
-  (if (not (get last-command 'unscrollable))
-      (progn
-	(set-marker unscroll-point (point))
-	(set-marker unscroll-window-start (window-start))
-	(setq unscroll-hscroll (window-hscroll)))))
-
-
-(defadvice scroll-up (before remember-for-unscroll activate compile)
-  "Remember where we started from, for `unscroll'."
-  (unscroll-maybe-remember))
-
-(defadvice scroll-down (before remember-for-unscroll activate compile)
-  "Remember where we started from, for `unscroll'."
-  (unscroll-maybe-remember))
-
-(defadvice scroll-left (before remember-for-unscroll activate compile)
-  "Remember where we started from, for `unscroll'."
-  (unscroll-maybe-remember))
-
-(defadvice scroll-right (before remember-for-unscroll activate compile)
-  "Remember where we started from, for `unscroll'."
-  (unscroll-maybe-remember))
-
-
 (set-default-font "Inconsolata 15")
 
 ;; Get rid of popups in OSX!!
@@ -479,3 +437,12 @@ middle"
 (remove-hook 'text-mode-hook 'turn-on-auto-fill)
 
 (add-to-list 'exec-path "/usr/local/Cellar/smlnj/110.75/libexec/bin")
+
+(add-to-list 'auto-mode-alist '("\\.erl?$" . erlang-mode))
+(add-to-list 'auto-mode-alist '("\\.hrl?$" . erlang-mode))
+
+(setq erlang-root-dir "/usr/local/Cellar/erlang/R15B03-1")
+(add-to-list 'exec-path "/usr/local/Cellar/erlang/R15B03-1/bin")
+(setq erlang-man-root-dir "/usr/local/Cellar/erlang/R15B03-1/man")
+
+
