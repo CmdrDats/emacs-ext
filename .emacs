@@ -3,17 +3,18 @@
 (require 'package)
 
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/")
-             '("marmalade" . "http://marmalade-repo.org/packages/")
-             )
+             '("melpa" . "http://melpa.milkbox.net/packages/"))
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/"))
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+
 (package-initialize)
 
 (when (not package-archive-contents)
   (package-refresh-contents))
 
 (defvar my-packages '(
-      rainbow-delimiters
-      marmalade
       projectile
       furl
       ido-ubiquitous
@@ -21,8 +22,8 @@
       starter-kit-lisp
       clojure-mode 
       ack-and-a-half
-      nrepl
-      nrepl-ritz
+      cider
+      auto-complete
       ac-nrepl
       smart-tab
       zenburn-theme
@@ -31,6 +32,8 @@
       erlang
       highlight-parentheses
       haskell-mode
+      rainbow-delimiters
+      powerline
       ))
 
 (dolist (p my-packages)
@@ -38,7 +41,7 @@
     (package-install p)))
 
 (cua-mode t)
-(delete-selection-mode t)
+(delete-selection-mode 1)
 (require 'clojure-mode)
 (require 'projectile)
 (require 'rainbow-delimiters)
@@ -48,49 +51,28 @@
 ;; Add hooks for modes where you want it enabled, for example:
 (setq projectile-show-paths-function 'projectile-hashify-with-relative-paths)
 
-(add-hook 'nrepl-interaction-mode-hook 'my-nrepl-mode-setup)
-(defun my-nrepl-mode-setup ()
-  (require 'nrepl-ritz))
-                                        ;(add-hook 'slime-mode-hook 'set-up-slime-ac)
-
-
-;; (add-hook 'slime-repl-mode-hook
-;;           (defun clojure-mode-slime-font-lock ()
-;;             (require 'clojure-mode)
-;;             (let (font-lock-mode)
-;;               (clojure-mode-font-lock-setup))))
-
-;; Technomancy's slime colours
-;; (require 'ansi-color)
-
-;; (defadvice sldb-insert-frame (around colorize-clj-trace (frame &optional face))
-;;   (progn
-;;     (ad-set-arg 0 (list (sldb-frame.number frame)
-;;                         (ansi-color-apply (sldb-frame.string frame))
-;;                         (sldb-frame.plist frame)))
-;;     ad-do-it
-;;     (save-excursion
-;;       (forward-line -1)
-;;       (skip-chars-forward "0-9 :")
-;;       (let ((beg-line (point)))
-;;         (end-of-line)
-;;         (remove-text-properties beg-line (point) '(face nil))))))
-
-;;(ad-activate #'sldb-insert-frame)
-
 (add-to-list 'ac-modes 'clojure-mode)
 
-(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
-(add-to-list 'same-window-buffer-names "*nrepl*")
-(add-hook 'nrepl-mode-hook 'paredit-mode)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(setq nrepl-hide-special-buffers t)
+(setq cider-popup-stacktraces nil)
+(setq cider-repl-popup-stacktraces nil)
+(setq cider-auto-select-error-buffer t)
+(setq cider-repl-history-file "~/.emacs.d/cider.history")
+(add-hook 'cider-repl-mode-hook 'subword-mode)
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
+(add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode)
+(add-to-list 'same-window-buffer-names "*cider*")
+(setq cider-repl-display-in-current-window nil)
+
+
 (add-hook 'prog-mode-hook 'paredit-mode)
-(setq nrepl-popup-stacktraces nil)
 
 (require 'ac-nrepl)
- (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
- (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+ (add-hook 'cider-mode-hook 'ac-nrepl-setup)
+ (add-hook 'cider-interaction-mode-hook 'ac-nrepl-setup)
  (eval-after-load "auto-complete"
-   '(add-to-list 'ac-modes 'nrepl-mode))
+   '(add-to-list 'ac-modes 'cider-mode))
 
 (setq ac-use-quick-help t)
 (setq ac-quick-help-delay 1)
@@ -114,7 +96,7 @@
 (add-to-list 'auto-mode-alist '("\.edn$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
 (projectile-global-mode)
-
+(cider-enable-on-existing-clojure-buffers)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -123,7 +105,7 @@
  '(ac-auto-show-menu nil)
  '(ac-auto-start nil)
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(custom-safe-themes (quote ("216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(haskell-mode-hook (quote (turn-on-haskell-indentation turn-on-font-lock turn-on-haskell-doc-mode turn-on-haskell-decl-scan imenu-add-menubar-index)))
  '(haskell-program-name "/usr/local/bin/hugs \"+.\"")
  '(hl-paren-background-colors (quote ("#3355aa" "#557733" "#335533")))
@@ -132,10 +114,11 @@
  '(ido-mode (quote both) nil (ido))
  '(ido-use-filename-at-point nil)
  '(lua-default-application "lua")
- '(nrepl-connected-hook (quote (nrepl-enable-on-existing-clojure-buffers)))
- '(nrepl-host "localhost")
- '(nrepl-port "")
+ '(nrepl-connected-hook (quote (cider-enable-on-existing-clojure-buffers)))
+ '(cider-host "localhost")
+ '(cider-port "")
  '(recentf-mode nil)
+ '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(standard-indent 2)
  '(tab-stop-list (quote (2 4 6 8 10 12 14 16 18 20 22 24 26 28 30)))
@@ -192,9 +175,11 @@ If point was already at that position, move point to beginning of line."
 ;; Disable startup screen
 (setq inhibit-startup-screen t)
 
+(global-set-key (kbd "s-.") 'org-edit-special)
+(global-set-key (kbd "s-,") 'org-edit-src-exit)
+
 (global-set-key (kbd "C-z") 'undo) ; Ctrl+z
 (global-set-key (kbd "C-S-z") 'redo) ;  Ctrl+Shift+z
-(global-set-key (kbd "C-c") 'kill-ring-save)
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key (kbd "C-s") 'save-buffer)
@@ -248,16 +233,24 @@ If point was already at that position, move point to beginning of line."
 
 (delete-selection-mode t)
 
-(defun kill-paredit-or-region (beg end) 
- "kill region if active only or kill line normally"
-  (interactive "r")
+(defun kill-paredit-or-region () 
+  "kill region if active only or kill line normally"
+  (interactive)
   (if (region-active-p)
       (call-interactively 'kill-region)
     (call-interactively 'paredit-forward-delete)))
 
+(defun killbackward-paredit-or-region () 
+  "kill region if active only or kill line normally"
+  (interactive)
+  (if (region-active-p)
+      (call-interactively 'kill-region)
+    (call-interactively 'paredit-backward-delete)))
+
 (eval-after-load 'paredit
   '(progn
      (define-key paredit-mode-map (kbd "<kp-delete>") 'kill-paredit-or-region)
+     (define-key paredit-mode-map (kbd "<backspace>") 'killbackward-paredit-or-region)
      (define-key paredit-mode-map (kbd "<M-up>") nil)
      (define-key paredit-mode-map (kbd "<M-down>") nil)))
 
@@ -357,17 +350,17 @@ middle"
 (defun win-resize-enlarge-vert ()
   (interactive)
   (cond
-   ((equal "top" (win-resize-top-or-bot)) (enlarge-window -15))
-   ((equal "bot" (win-resize-top-or-bot)) (enlarge-window 15))
-   ((equal "mid" (win-resize-top-or-bot)) (enlarge-window -15))
+   ((equal "top" (win-resize-top-or-bot)) (enlarge-window -5))
+   ((equal "bot" (win-resize-top-or-bot)) (enlarge-window 5))
+   ((equal "mid" (win-resize-top-or-bot)) (enlarge-window -5))
    (t (message "nil"))))
 
 (defun win-resize-minimize-vert ()
   (interactive)
   (cond
-   ((equal "top" (win-resize-top-or-bot)) (enlarge-window 15))
-   ((equal "bot" (win-resize-top-or-bot)) (enlarge-window -15))
-   ((equal "mid" (win-resize-top-or-bot)) (enlarge-window 15))
+   ((equal "top" (win-resize-top-or-bot)) (enlarge-window 5))
+   ((equal "bot" (win-resize-top-or-bot)) (enlarge-window -5))
+   ((equal "mid" (win-resize-top-or-bot)) (enlarge-window 5))
    (t (message "nil"))))
 
 (defun win-resize-enlarge-horiz ()
@@ -394,7 +387,7 @@ middle"
 ;(global-set-key [s-S-down] 'win-resize-minimize-horiz)
 ;(global-set-key [s-S-left] 'win-resize-enlarge-vert)
 
-(set-default-font "Inconsolata 15")
+
 
 ;; Get rid of popups in OSX!!
 (defadvice yes-or-no-p (around prevent-dialog activate)
@@ -445,4 +438,119 @@ middle"
 (add-to-list 'exec-path "/usr/local/Cellar/erlang/R15B03-1/bin")
 (setq erlang-man-root-dir "/usr/local/Cellar/erlang/R15B03-1/man")
 
+;(powerline-center-theme)
+
+(set-default-font "Inconsolata 15")
+
+(setq ring-bell-function #'ignore)
+
+;; Toggle window dedication
+(defun toggle-window-dedicated ()
+  "Toggle whether the current active window is dedicated or not"
+  (interactive)
+  (message 
+   (if (let (window (get-buffer-window (current-buffer)))
+         (set-window-dedicated-p window 
+                                 (not (window-dedicated-p window))))
+       "Window '%s' is dedicated"
+     "Window '%s' is normal")
+   (current-buffer)))
+
+(global-set-key [f15] 'toggle-window-dedicated)
+
+(require 'powerline)
+(powerline-default-theme)
+
+;; (defun nrepl-docsrc-handler (symbol)
+;;   "Create a handler to lookup docs & source
+;;   for SYMBOL."
+;;   (let ((form (format "(clojure.repl/source %s)" symbol))
+;;         (doc-form (format "(clojure.repl/doc %s)" symbol))
+;;         (src-buffer (nrepl-popup-buffer nrepl-src-buffer t)))
+;;     (with-current-buffer src-buffer
+;;       (clojure-mode)
+;;       (nrepl-popup-buffer-mode +1))
+;;     (nrepl-send-string doc-form
+;;                        (nrepl-popup-eval-out-handler src-buffer)
+;;                        nrepl-buffer-ns
+;;                        (nrepl-current-tooling-session))
+;;     (nrepl-send-string form
+;;                        (nrepl-popup-eval-out-handler src-buffer)
+;;                        nrepl-buffer-ns
+;;                        (nrepl-current-tooling-session))))
+
+;; (defun nrepl-docsrc (query)
+;;   "Open a window with the source for the given QUERY.
+;; Defaults to the symbol at point.  With prefix arg or no symbol
+;; under point, prompts for a var."
+;;   (interactive "P")
+;;   (nrepl-read-symbol-name "Symbol: " 'nrepl-docsrc-handler query))
+
+
+;; (defun clojure-cheatsheet/lookup-docsrc
+;;   (symbol)
+;;   (if (nrepl-current-connection-buffer)
+;;       (nrepl-docsrc-handler symbol)
+;;     (error "nREPL not connected!")))
+
+;; (defun clojure-cheatsheet/item-to-helm-source
+;;   (item)
+;;   (let ((heading (car item))
+;; 	(symbols (cdr item)))
+;;     `((name . ,heading)
+;;       (candidates ,@symbols)
+;;       (match . ((lambda (candidate)
+;; 		  (helm-mp-3-match (format "%s %s" candidate ,heading)))))
+;;       (action . (("Lookup Docs & Source" . clojure-cheatsheet/lookup-docsrc)
+;;       		 ("Lookup Docs" . clojure-cheatsheet/lookup-doc)
+;; 		 ("Lookup Source" . clojure-cheatsheet/lookup-src))))))
+
+;; (defvar helm-source-clojure-cheatsheet
+;;  (mapcar 'clojure-cheatsheet/item-to-helm-source
+;; 	 (clojure-cheatsheet/group-by-head
+;; 	  (clojure-cheatsheet/flatten
+;; 	   (clojure-cheatsheet/propagate-headings clojure-cheatsheet-hierarchy)))))
+
+(require 'ob)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((clojure . t)
+   (sh . t)
+   (lisp . t)
+   (ditaa . t)))
+
+(add-to-list 'org-babel-tangle-lang-exts '("clojure" . "clj"))
+
+(defvar org-babel-default-header-args:clojure
+  '((:results . "silent") (:tangle . "yes")))
+
+(defun org-babel-execute:clojure (body params)
+  (lisp-eval-string body)
+  "Done!")
+
+(provide 'ob-clojure)
+
+(setq org-src-fontify-natively t)
+(setq org-confirm-babel-evaluate nil)
+
+
+(declare-function nrepl-send-string-sync "ext:nrepl" (code &optional ns))
+
+(defun org-babel-execute:clojure (body params)
+  "Execute a block of Clojure code with Babel."
+  (require 'nrepl)
+  (with-temp-buffer
+    (insert (org-babel-expand-body:clojure body params))
+    ((lambda (result)
+       (let ((result-params (cdr (assoc :result-params params))))
+         (if (or (member "scalar" result-params)
+                 (member "verbatim" result-params))
+             result
+           (condition-case nil (org-babel-script-escape result)
+             (error result)))))
+     (plist-get (nrepl-send-string-sync
+                 (buffer-substring-no-properties (point-min) (point-max))
+                 (cdr (assoc :package params)))
+                :value))))
 
