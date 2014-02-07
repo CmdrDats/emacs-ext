@@ -34,6 +34,7 @@
       haskell-mode
       rainbow-delimiters
       clj-refactor
+      yasnippet
       ))
 
 (dolist (p my-packages)
@@ -567,3 +568,7 @@ middle"
           (lambda ()
             (clj-refactor-mode 1)
             (cljr-add-keybindings-with-prefix "s-r")))
+
+(global-set-key (kbd "<M-s-right>") 'buf-move-right)
+
+(yas-global-mode 1)
