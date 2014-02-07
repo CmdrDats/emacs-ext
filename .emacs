@@ -2,8 +2,8 @@
 ;; Clojure stuff
 (require 'package)
 
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/"))
+
+;;(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
 (add-to-list 'package-archives
              '("org" . "http://orgmode.org/elpa/"))
 (add-to-list 'package-archives
@@ -33,7 +33,7 @@
       highlight-parentheses
       haskell-mode
       rainbow-delimiters
-      powerline
+      clj-refactor
       ))
 
 (dolist (p my-packages)
@@ -104,8 +104,10 @@
  ;; If there is more than one, they won't work right.
  '(ac-auto-show-menu nil)
  '(ac-auto-start nil)
+ '(cider-host "localhost")
+ '(cider-port "")
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(custom-safe-themes (quote ("dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" "8eef22cd6c122530722104b7c82bc8cdbb690a4ccdd95c5ceec4f3efa5d654f5" "f3d2144fed1adb27794a45e61166e98820ab0bbf3cc7ea708e4bf4b57447ee27" "216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(haskell-mode-hook (quote (turn-on-haskell-indentation turn-on-font-lock turn-on-haskell-doc-mode turn-on-haskell-decl-scan imenu-add-menubar-index)))
  '(haskell-program-name "/usr/local/bin/hugs \"+.\"")
  '(hl-paren-background-colors (quote ("#3355aa" "#557733" "#335533")))
@@ -115,8 +117,6 @@
  '(ido-use-filename-at-point nil)
  '(lua-default-application "lua")
  '(nrepl-connected-hook (quote (cider-enable-on-existing-clojure-buffers)))
- '(cider-host "localhost")
- '(cider-port "")
  '(recentf-mode nil)
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
@@ -458,8 +458,8 @@ middle"
 
 (global-set-key [f15] 'toggle-window-dedicated)
 
-(require 'powerline)
-(powerline-default-theme)
+;;(require 'powerline)
+;;(powerline-default-theme)
 
 ;; (defun nrepl-docsrc-handler (symbol)
 ;;   "Create a handler to lookup docs & source
@@ -554,3 +554,16 @@ middle"
                  (cdr (assoc :package params)))
                 :value))))
 
+
+(add-hook 'clojure-mode-hook
+          '(lambda ()
+             (font-lock-add-keywords
+                nil
+                '(("(\\(\\w+[/]\\w+\\)"
+                   (1 font-lock-function-name-face))))))
+
+(require 'clj-refactor)
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (clj-refactor-mode 1)
+            (cljr-add-keybindings-with-prefix "s-r")))
