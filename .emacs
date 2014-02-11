@@ -570,7 +570,11 @@ middle"
              (font-lock-add-keywords
               nil
               '(("\\(\\w+[/]\\w+\\)"
-                 (1 font-lock-type-face))))))
+                 (1 font-lock-type-face))))
+             (font-lock-add-keywords
+              nil
+              '(("SELECT\\|FROM\\|WHERE\\|LEFT JOIN\\|GROUP BY\\|ORDER BY\\|LIMIT\\|HAVING\\|AND\\|OR\\|IN\\|DESC\\|ASC\\|SUM\\|AVERAGE\\|FROM_UNIXTIME\\|NOT\\|ISNULL"
+                 0 font-lock-type-face t)))))
 
 (require 'clj-refactor)
 
