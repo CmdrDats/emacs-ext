@@ -44,6 +44,7 @@
 
 (cua-mode t)
 (delete-selection-mode 1)
+
 (require 'clojure-mode)
 ;;(require 'projectile)
 (require 'rainbow-delimiters)
@@ -133,6 +134,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(font-lock-builtin-face ((t (:foreground "light green" :weight thin))))
  '(font-lock-constant-face ((t (:foreground "#ddaa77" :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "#8cd0d3" :slant italic))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#7dd6e8"))))
@@ -557,12 +559,18 @@ middle"
                 :value))))
 
 
+
+
 (add-hook 'clojure-mode-hook
           '(lambda ()
              (font-lock-add-keywords
-                nil
-                '(("(\\(\\w+[/]\\w+\\)"
-                   (1 font-lock-function-name-face))))))
+              nil
+              '(("(\\(\\w+[/]\\w+\\)"
+                 (1 font-lock-function-name-face))))
+             (font-lock-add-keywords
+              nil
+              '(("\\(\\w+[/]\\w+\\)"
+                 (1 font-lock-type-face))))))
 
 (require 'clj-refactor)
 
