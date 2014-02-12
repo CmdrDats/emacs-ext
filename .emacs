@@ -36,6 +36,7 @@
       rainbow-delimiters
       clj-refactor
       yasnippet
+      fill-column-indicator
       ))
 
 (dolist (p my-packages)
@@ -44,6 +45,9 @@
 
 (cua-mode t)
 (delete-selection-mode 1)
+
+(require 'fill-column-indicator)
+(setq fci-rule-width 1)
 
 (require 'clojure-mode)
 ;;(require 'projectile)
@@ -55,6 +59,7 @@
 ;;(setq projectile-show-paths-function 'projectile-hashify-with-relative-paths)
 
 (add-to-list 'ac-modes 'clojure-mode)
+(add-hook 'clojure-mode 'fci-mode)
 
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 (setq nrepl-hide-special-buffers t)
@@ -111,6 +116,9 @@
  '(cider-port "")
  '(custom-enabled-themes (quote (zenburn)))
  '(custom-safe-themes (quote ("9370aeac615012366188359cb05011aea721c73e1cb194798bc18576025cabeb" "dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" "8eef22cd6c122530722104b7c82bc8cdbb690a4ccdd95c5ceec4f3efa5d654f5" "f3d2144fed1adb27794a45e61166e98820ab0bbf3cc7ea708e4bf4b57447ee27" "216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(fci-dash-pattern 0.6)
+ '(fci-rule-color "gray11")
+ '(fci-rule-use-dashes t)
  '(haskell-mode-hook (quote (turn-on-haskell-indentation turn-on-font-lock turn-on-haskell-doc-mode turn-on-haskell-decl-scan imenu-add-menubar-index)))
  '(haskell-program-name "/usr/local/bin/hugs \"+.\"")
  '(hl-paren-background-colors (quote ("#3355aa" "#557733" "#335533")))
