@@ -137,6 +137,7 @@
  '(font-lock-builtin-face ((t (:foreground "light green" :weight thin))))
  '(font-lock-constant-face ((t (:foreground "#ddaa77" :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "#8cd0d3" :slant italic))))
+ '(font-lock-warning-face ((t (:foreground "MediumPurple1" :weight normal))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#7dd6e8"))))
  '(rainbow-delimiters-depth-10-face ((t (:foreground "#ece4bf"))) t)
  '(rainbow-delimiters-depth-11-face ((t (:foreground "#ef9f7f"))) t)
@@ -573,8 +574,19 @@ middle"
                  (1 font-lock-type-face))))
              (font-lock-add-keywords
               nil
+              '(("\\(ent[/]\\w+\\)"
+                 (1 font-lock-warning-face t))))
+             (font-lock-add-keywords
+              nil
               '(("SELECT\\|FROM\\|WHERE\\|LEFT JOIN\\|GROUP BY\\|ORDER BY\\|LIMIT\\|HAVING\\|AND\\|OR\\|IN\\|DESC\\|ASC\\|SUM\\|AVERAGE\\|FROM_UNIXTIME\\|NOT\\|ISNULL"
                  0 font-lock-type-face t)))))
+
+(eval-after-load 'clojure-mode
+  '(font-lock-add-keywords
+    'clojure-mode `(("(\\(partial\\)[[:space:]]"
+                     (0 (progn (compose-region (match-beginning 1)
+                                               (match-end 1) "Þ")
+                               nil))))))
 
 (require 'clj-refactor)
 
