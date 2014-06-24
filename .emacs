@@ -6,8 +6,8 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
 (add-to-list 'package-archives
              '("org" . "http://orgmode.org/elpa/"))
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/"))
+;;
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 
 (package-initialize)
 
@@ -15,8 +15,8 @@
   (package-refresh-contents))
 
 (defvar my-packages '(
-      ;;projectile
-      dash
+      projectile
+      ;;dash
       ;;furl
       ido-ubiquitous
       starter-kit
@@ -35,6 +35,9 @@
       haskell-mode
       rainbow-delimiters
       clj-refactor
+      php-mode
+      web-mode
+      flx-ido
       ;;yasnippet
       ;;color-identifiers-mode
       ;;fill-column-indicator
@@ -61,7 +64,7 @@
 
 
 (require 'clojure-mode)
-;;(require 'projectile)
+(require 'projectile)
 (require 'rainbow-delimiters)
 (require 'auto-complete)
 (require 'buffer-move)
@@ -71,20 +74,27 @@
 
 (add-to-list 'ac-modes 'clojure-mode)
 
-(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-(setq nrepl-hide-special-buffers t)
-(setq cider-popup-stacktraces nil)
-(setq cider-repl-popup-stacktraces nil)
+;;(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+
+(setq nrepl-hide-special-buffers nil)
+(setq cider-popup-stacktraces t)
+(setq cider-repl-popup-stacktraces t)
 (setq cider-auto-select-error-buffer t)
 (setq cider-repl-history-file "~/.emacs.d/cider.history")
+
 (add-hook 'cider-repl-mode-hook 'subword-mode)
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode)
 (add-to-list 'same-window-buffer-names "*cider*")
 (setq cider-repl-display-in-current-window nil)
-
+(setq cider-known-endpoints '(("inhouse" "dev" "4005") ("cljserver" "4006") ("live" "192.168.1.11" "4005")))
 
 (add-hook 'prog-mode-hook 'paredit-mode)
+(add-hook 'php-mode-hook 'disable-paredit-mode)
+(add-hook 'javascript-mode-hook 'disable-paredit-mode)
+(add-hook 'web-mode-hook 'disable-paredit-mode)
+(add-hook 'web-mode-hook 'electric-pair-mode)
+(add-hook 'web-mode-hook 'turn-off-auto-fill)
 
 (require 'ac-nrepl)
  (add-hook 'cider-mode-hook 'ac-nrepl-setup)
@@ -113,7 +123,7 @@
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-to-list 'auto-mode-alist '("\.edn$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
-;;(projectile-global-mode)
+(projectile-global-mode)
 (cider-enable-on-existing-clojure-buffers)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -125,7 +135,7 @@
  '(cider-host "localhost")
  '(cider-port "")
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("a3d519ee30c0aa4b45a277ae41c4fa1ae80e52f04098a2654979b1ab859ab0bf" "9370aeac615012366188359cb05011aea721c73e1cb194798bc18576025cabeb" "dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" "8eef22cd6c122530722104b7c82bc8cdbb690a4ccdd95c5ceec4f3efa5d654f5" "f3d2144fed1adb27794a45e61166e98820ab0bbf3cc7ea708e4bf4b57447ee27" "216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(custom-safe-themes (quote ("c2cfe2f1440d9ef4bfd3ef4cf15bfe35ff40e6d431264b1e24af64f145cffb11" "cd70962b469931807533f5ab78293e901253f5eeb133a46c2965359f23bfb2ea" "a53714de04cd4fdb92ed711ae479f6a1d7d5f093880bfd161467c3f589725453" "a3d519ee30c0aa4b45a277ae41c4fa1ae80e52f04098a2654979b1ab859ab0bf" "9370aeac615012366188359cb05011aea721c73e1cb194798bc18576025cabeb" "dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" "8eef22cd6c122530722104b7c82bc8cdbb690a4ccdd95c5ceec4f3efa5d654f5" "f3d2144fed1adb27794a45e61166e98820ab0bbf3cc7ea708e4bf4b57447ee27" "216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(fci-dash-pattern 0.6)
  '(fci-handle-line-move-visual nil)
  '(fci-handle-truncate-lines nil)
@@ -148,7 +158,10 @@
  '(tab-stop-list (quote (2 4 6 8 10 12 14 16 18 20 22 24 26 28 30)))
  '(tool-bar-mode nil)
  '(transient-mark-mode (quote (only . t)))
- '(visible-bell nil))
+ '(visible-bell nil)
+ '(web-mode-code-indent-offset 4)
+ '(web-mode-markup-indent-offset 4)
+ '(web-mode-script-padding 4))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -171,7 +184,8 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "#89c4c7"))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "#c2eec6"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "#ef9f7f"))))
- '(rainbow-delimiters-depth-9-face ((t (:foreground "#9de6e8")))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "#9de6e8"))))
+ '(web-mode-block-face ((t (:background "gray22")))))
 
 (setq show-paren-delay 0)           ; how long to wait?
 (show-paren-mode t)                 ; turn paren-mode on
@@ -437,9 +451,9 @@ middle"
 
 (global-set-key (kbd "<f6>") 'highlight-regexp)
 (global-set-key (kbd "M-<f6>") 'unhighlight-regexp)
-;;(auto-fill-mode -1)
-;;(turn-off-auto-fill)
-;;(remove-hook 'text-mode-hook 'turn-on-auto-fill)
+(auto-fill-mode -1)
+(turn-off-auto-fill)
+(remove-hook 'text-mode-hook 'turn-on-auto-fill)
 
 (add-to-list 'exec-path "/usr/local/Cellar/smlnj/110.75/libexec/bin")
 
@@ -612,6 +626,7 @@ middle"
     (paredit-mode . " π")
     (eldoc-mode . "")
     (abbrev-mode . "")
+    (projectile-mode . " P")
     ;; Major modes
     (lisp-interaction-mode . "λ")
     (hi-lock-mode . "")
@@ -623,7 +638,9 @@ middle"
     (highlight-parentheses-mode . "")
     (auto-fill-function " ι")
     (clj-refactor-mode " ζ")
-    (cider-mode " Ξ"))
+    (cider-mode " Ξ")
+    (elisp-slime-nav-mode . " sN")
+    )
   "Alist for `clean-mode-line'.
  
 When you add a new element to the alist, keep in mind that you
@@ -646,3 +663,20 @@ want to use in the modeline *in lieu of* the original.")
  
 (add-hook 'after-change-major-mode-hook 'clean-mode-line)
 (which-func-mode 1)
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.tpl\\'" . web-mode))
+(setq web-mode-enable-block-face t)
+(setq web-mode-enable-part-face t)
+;;(setq web-mode-engines-alternate-delimiters '(("smarty" . ("{\?" . "\?}"))))
+
+(require 'php-boris)
+(setq php-boris-command "/storage/packer/boris")
+
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-use-faces nil)
+(setq js-indent-level 4)
