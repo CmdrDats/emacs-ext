@@ -4,10 +4,9 @@
 
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
-(add-to-list 'package-archives
-             '("org" . "http://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 ;;
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 
 (package-initialize)
 
@@ -24,7 +23,8 @@
       ack-and-a-half
       cider
       auto-complete
-      ac-nrepl
+      ac-cider
+      ac-cider-compliment
       smart-tab
       zenburn-theme
       buffer-move
@@ -43,6 +43,8 @@
       ;;powerline
       projectile
       gnuplot-mode
+      company
+      company-cider
       ))
 
 (dolist (p my-packages)
@@ -88,7 +90,7 @@
 (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode)
 (add-to-list 'same-window-buffer-names "*cider*")
 (setq cider-repl-display-in-current-window nil)
-(setq cider-known-endpoints '(("inhouse" "dev" "4005") ("cljserver" "dev" "4007") ("live" "192.168.1.11" "4005")))
+(setq cider-known-endpoints '(("inhouse" "dev" "4005") ("cljserver" "dev" "4007") ("printserv" "dev" "4008") ("live" "192.168.1.11" "4005")))
 
 (add-hook 'prog-mode-hook 'paredit-mode)
 (add-hook 'php-mode-hook 'disable-paredit-mode)
@@ -97,11 +99,24 @@
 (add-hook 'web-mode-hook 'electric-pair-mode)
 (add-hook 'web-mode-hook 'turn-off-auto-fill)
 
+(require 'ac-cider)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+(eval-after-load "auto-complete"
+  '(add-to-list 'ac-modes 'cider-mode))
+
+(defun set-auto-complete-as-completion-at-point-function ()
+  (setq completion-at-point-functions '(auto-complete)))
+
+(add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
+
 (require 'ac-nrepl)
- (add-hook 'cider-mode-hook 'ac-nrepl-setup)
- (add-hook 'cider-interaction-mode-hook 'ac-nrepl-setup)
- (eval-after-load "auto-complete"
-   '(add-to-list 'ac-modes 'cider-mode))
+(add-hook 'cider-mode-hook 'ac-nrepl-setup)
+(add-hook 'cider-interaction-mode-hook 'ac-nrepl-setup)
+(eval-after-load "auto-complete"
+  '(add-to-list 'ac-modes 'cider-mode))
 
 (setq ac-use-quick-help t)
 (setq ac-quick-help-delay 1)
@@ -608,7 +623,9 @@ middle"
     'clojure-mode `(("(\\(partial\\)[[:space:]]"
                      (0 (progn (compose-region (match-beginning 1)
                                                (match-end 1) "Þ")
-                               nil))))))
+                               nil)))
+                    
+                    )))
 
 (require 'clj-refactor)
 
@@ -681,3 +698,5 @@ want to use in the modeline *in lieu of* the original.")
 
 (require 'gnuplot-mode)
 (setq gnuplot-program "/usr/local/bin/gnuplot")
+
+
