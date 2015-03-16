@@ -6,7 +6,7 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 ;;
-;;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 
 (package-initialize)
 
@@ -22,9 +22,9 @@
       clojure-mode 
       ack-and-a-half
       cider
-      auto-complete
+      ;;auto-complete
       ac-cider
-      ac-cider-compliment
+      ;;ac-cider-compliment
       smart-tab
       zenburn-theme
       buffer-move
@@ -37,14 +37,15 @@
       php-mode
       web-mode
       flx-ido
+      git-gutter
       ;;yasnippet
       ;;color-identifiers-mode
       ;;fill-column-indicator
       ;;powerline
       projectile
       gnuplot-mode
-      company
-      company-cider
+      ;;company
+      ;;company-cider
       ))
 
 (dolist (p my-packages)
@@ -77,9 +78,9 @@
 
 (add-to-list 'ac-modes 'clojure-mode)
 
-;;(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(add-hook 'cider-mode-hook #'eldoc-mode)
 
-(setq nrepl-hide-special-buffers nil)
+(setq nrepl-hide-special-buffers t)
 (setq cider-popup-stacktraces nil)
 (setq cider-repl-popup-stacktraces nil)
 (setq cider-auto-select-error-buffer t)
@@ -112,9 +113,6 @@
 (add-hook 'auto-complete-mode-hook 'set-auto-complete-as-completion-at-point-function)
 (add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
 
-(require 'ac-nrepl)
-(add-hook 'cider-mode-hook 'ac-nrepl-setup)
-(add-hook 'cider-interaction-mode-hook 'ac-nrepl-setup)
 (eval-after-load "auto-complete"
   '(add-to-list 'ac-modes 'cider-mode))
 
@@ -135,12 +133,13 @@
 (put-clojure-indent 'fresh 'defun)
 (put-clojure-indent 'conde 'defun)
 
-
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (add-to-list 'auto-mode-alist '("\.edn$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\.cljs$" . clojure-mode))
 (projectile-global-mode)
 (cider-enable-on-existing-clojure-buffers)
+
+;;(load-theme 'solarized-dark t)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -150,8 +149,13 @@
  '(ac-auto-start nil)
  '(cider-host "localhost")
  '(cider-port "")
+ '(compilation-message-face (quote default))
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#839496")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
  '(custom-enabled-themes (quote (zenburn)))
- '(custom-safe-themes (quote ("146d24de1bb61ddfa64062c29b5ff57065552a7c4019bee5d869e938782dfc2a" "c2cfe2f1440d9ef4bfd3ef4cf15bfe35ff40e6d431264b1e24af64f145cffb11" "cd70962b469931807533f5ab78293e901253f5eeb133a46c2965359f23bfb2ea" "a53714de04cd4fdb92ed711ae479f6a1d7d5f093880bfd161467c3f589725453" "a3d519ee30c0aa4b45a277ae41c4fa1ae80e52f04098a2654979b1ab859ab0bf" "9370aeac615012366188359cb05011aea721c73e1cb194798bc18576025cabeb" "dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" "8eef22cd6c122530722104b7c82bc8cdbb690a4ccdd95c5ceec4f3efa5d654f5" "f3d2144fed1adb27794a45e61166e98820ab0bbf3cc7ea708e4bf4b57447ee27" "216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
+ '(custom-safe-themes (quote ("3c093ea152d7185cc78b61b05e52648c6d2fb0d8579c2119d775630fa459e0be" "9dae95cdbed1505d45322ef8b5aa90ccb6cb59e0ff26fef0b8f411dfc416c552" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "3b819bba57a676edf6e4881bd38c777f96d1aa3b3b5bc21d8266fa5b0d0f1ebf" "146d24de1bb61ddfa64062c29b5ff57065552a7c4019bee5d869e938782dfc2a" "c2cfe2f1440d9ef4bfd3ef4cf15bfe35ff40e6d431264b1e24af64f145cffb11" "cd70962b469931807533f5ab78293e901253f5eeb133a46c2965359f23bfb2ea" "a53714de04cd4fdb92ed711ae479f6a1d7d5f093880bfd161467c3f589725453" "a3d519ee30c0aa4b45a277ae41c4fa1ae80e52f04098a2654979b1ab859ab0bf" "9370aeac615012366188359cb05011aea721c73e1cb194798bc18576025cabeb" "dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" "8eef22cd6c122530722104b7c82bc8cdbb690a4ccdd95c5ceec4f3efa5d654f5" "f3d2144fed1adb27794a45e61166e98820ab0bbf3cc7ea708e4bf4b57447ee27" "216e6d0d3576e5c35785e68ca07b1c71f01ee4f3d80cb3b4da0ba55827bb3e5e" "d63e19a84fef5fa0341fa68814200749408ad4a321b6d9f30efc117aeaf68a2e" "e4eaeb23c81fd6c6b1796b823dbec0129d828e13da89a222901a758348db57fd" "5f946c56d7e5feaf04ea77339df7fa87300301ad450726743eca0a140e695b2c" "f5e56ac232ff858afb08294fc3a519652ce8a165272e3c65165c42d6fe0262a0" "71b172ea4aad108801421cc5251edb6c792f3adbaecfa1c52e94e3d99634dee7" "b7553781f4a831d5af6545f7a5967eb002c8daeee688c5cbf33bf27936ec18b3" "965234e8069974a8b8c83e865e331e4f53ab9e74" default)))
  '(fci-dash-pattern 0.6)
  '(fci-handle-line-move-visual nil)
  '(fci-handle-truncate-lines nil)
@@ -160,34 +164,44 @@
  '(fill-column 100)
  '(haskell-mode-hook (quote (turn-on-haskell-indentation turn-on-font-lock turn-on-haskell-doc-mode turn-on-haskell-decl-scan imenu-add-menubar-index)))
  '(haskell-program-name "/usr/local/bin/hugs \"+.\"")
+ '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
+ '(highlight-symbol-colors (--map (solarized-color-blend it "#002b36" 0.25) (quote ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
+ '(highlight-symbol-foreground-color "#93a1a1")
+ '(highlight-tail-colors (quote (("#073642" . 0) ("#546E00" . 20) ("#00736F" . 30) ("#00629D" . 50) ("#7B6000" . 60) ("#8B2C02" . 70) ("#93115C" . 85) ("#073642" . 100))))
  '(hl-paren-background-colors (quote ("#3355aa" "#557733" "#335533")))
  '(hl-paren-colors (quote nil))
  '(ido-everywhere t)
  '(ido-mode (quote both) nil (ido))
  '(ido-use-filename-at-point nil)
  '(lua-default-application "lua")
+ '(magit-diff-use-overlays nil)
+ '(magit-gitk-executable "/usr/local/bin/gitk")
+ '(magit-use-overlays nil)
  '(nrepl-connected-hook (quote (cider-enable-on-existing-clojure-buffers)))
  '(recentf-mode nil)
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
  '(standard-indent 2)
  '(tab-stop-list (quote (2 4 6 8 10 12 14 16 18 20 22 24 26 28 30)))
+ '(term-default-bg-color "#002b36")
+ '(term-default-fg-color "#839496")
  '(tool-bar-mode nil)
  '(transient-mark-mode (quote (only . t)))
  '(visible-bell nil)
  '(web-mode-code-indent-offset 4)
  '(web-mode-markup-indent-offset 4)
- '(web-mode-script-padding 4))
+ '(web-mode-script-padding 4)
+ '(weechat-color-list (quote (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83"))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-builtin-face ((t (:foreground "light green" :weight thin))))
+ '(font-lock-builtin-face ((((class color) (min-colors 89)) (:foreground "#657b83" :weight bold :slant normal))))
  '(font-lock-constant-face ((t (:foreground "#ddaa77" :weight bold))))
  '(font-lock-function-name-face ((t (:foreground "#8cd0d3" :slant italic))))
- '(font-lock-warning-face ((t (:foreground "MediumPurple1" :weight normal))))
  '(powerline-inactive1 ((t (:inherit mode-line-inactive :background "#383838"))) t)
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "#383838"))) t)
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#7dd6e8"))))
@@ -202,6 +216,8 @@
  '(rainbow-delimiters-depth-8-face ((t (:foreground "#ef9f7f"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "#9de6e8"))))
  '(web-mode-block-face ((t (:background "gray22")))))
+
+
 
 (setq show-paren-delay 0)           ; how long to wait?
 (show-paren-mode t)                 ; turn paren-mode on
@@ -500,61 +516,8 @@ middle"
 
 (global-set-key [f15] 'toggle-window-dedicated)
 
-;;(require 'powerline)
-;;(powerline-default-theme)
-
-;; (defun nrepl-docsrc-handler (symbol)
-;;   "Create a handler to lookup docs & source
-;;   for SYMBOL."
-;;   (let ((form (format "(clojure.repl/source %s)" symbol))
-;;         (doc-form (format "(clojure.repl/doc %s)" symbol))
-;;         (src-buffer (nrepl-popup-buffer nrepl-src-buffer t)))
-;;     (with-current-buffer src-buffer
-;;       (clojure-mode)
-;;       (nrepl-popup-buffer-mode +1))
-;;     (nrepl-send-string doc-form
-;;                        (nrepl-popup-eval-out-handler src-buffer)
-;;                        nrepl-buffer-ns
-;;                        (nrepl-current-tooling-session))
-;;     (nrepl-send-string form
-;;                        (nrepl-popup-eval-out-handler src-buffer)
-;;                        nrepl-buffer-ns
-;;                        (nrepl-current-tooling-session))))
-
-;; (defun nrepl-docsrc (query)
-;;   "Open a window with the source for the given QUERY.
-;; Defaults to the symbol at point.  With prefix arg or no symbol
-;; under point, prompts for a var."
-;;   (interactive "P")
-;;   (nrepl-read-symbol-name "Symbol: " 'nrepl-docsrc-handler query))
-
-
-;; (defun clojure-cheatsheet/lookup-docsrc
-;;   (symbol)
-;;   (if (nrepl-current-connection-buffer)
-;;       (nrepl-docsrc-handler symbol)
-;;     (error "nREPL not connected!")))
-
-;; (defun clojure-cheatsheet/item-to-helm-source
-;;   (item)
-;;   (let ((heading (car item))
-;; 	(symbols (cdr item)))
-;;     `((name . ,heading)
-;;       (candidates ,@symbols)
-;;       (match . ((lambda (candidate)
-;; 		  (helm-mp-3-match (format "%s %s" candidate ,heading)))))
-;;       (action . (("Lookup Docs & Source" . clojure-cheatsheet/lookup-docsrc)
-;;       		 ("Lookup Docs" . clojure-cheatsheet/lookup-doc)
-;; 		 ("Lookup Source" . clojure-cheatsheet/lookup-src))))))
-
-;; (defvar helm-source-clojure-cheatsheet
-;;  (mapcar 'clojure-cheatsheet/item-to-helm-source
-;; 	 (clojure-cheatsheet/group-by-head
-;; 	  (clojure-cheatsheet/flatten
-;; 	   (clojure-cheatsheet/propagate-headings clojure-cheatsheet-hierarchy)))))
-
 (require 'ob)
-
+(setq org-ditaa-jar-path "~/ditaa0_9.jar")
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((clojure . t)
@@ -576,27 +539,15 @@ middle"
 (setq org-src-fontify-natively t)
 (setq org-confirm-babel-evaluate nil)
 
-
-(declare-function nrepl-send-string-sync "ext:nrepl" (code &optional ns))
-
-(defun org-babel-execute:clojure (body params)
-  "Execute a block of Clojure code with Babel."
-  (require 'nrepl)
-  (with-temp-buffer
-    (insert (org-babel-expand-body:clojure body params))
-    ((lambda (result)
-       (let ((result-params (cdr (assoc :result-params params))))
-         (if (or (member "scalar" result-params)
-                 (member "verbatim" result-params))
-             result
-           (condition-case nil (org-babel-script-escape result)
-             (error result)))))
-     (plist-get (nrepl-send-string-sync
-                 (buffer-substring-no-properties (point-min) (point-max))
-                 (cdr (assoc :package params)))
-                :value))))
-
-
+;; (defvar clojure-brace-face		'clojure-brace-face
+;;   "Face used for clojure braces")
+;; (defface clojure-brace-face
+;;   '((t :background "#992222" :weight bold))
+;;   "Face used for clojure braces"
+;;   :tag "Clojure brace face"
+;;   :group 'clojure
+;;   )
+;; (font-lock-add-keywords 'clojure-mode '(("\\([\\{\\}]+\\)" 1 clojure-brace-face append)))
 
 
 (add-hook 'clojure-mode-hook
@@ -624,8 +575,12 @@ middle"
                      (0 (progn (compose-region (match-beginning 1)
                                                (match-end 1) "Þ")
                                nil)))
-                    
+                    ("(\\(comp\\)[[:space:]]"
+                     (0 (progn (compose-region (match-beginning 1)
+                                               (match-end 1) "º")
+                               nil)))
                     )))
+
 
 (require 'clj-refactor)
 
@@ -700,3 +655,6 @@ want to use in the modeline *in lieu of* the original.")
 (setq gnuplot-program "/usr/local/bin/gnuplot")
 
 
+(put 'narrow-to-region 'disabled nil)
+
+(global-git-gutter-mode 1)
